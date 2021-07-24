@@ -75,127 +75,120 @@ class _StalkerState extends State<Stalker> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(30),
-          child: MouseRegion(
-            onEnter: (event) {
-              _offsetTween.begin = _offsetTween.end;
-              _offsetAnimationController.reset();
+    return MouseRegion(
+      onEnter: (event) {
+        _offsetTween.begin = _offsetTween.end;
+        _offsetAnimationController.reset();
 
-              _offsetTween.end = getPerspectivePointer(event.position);
-              _offsetAnimationController.forward();
+        _offsetTween.end = getPerspectivePointer(event.position);
+        _offsetAnimationController.forward();
 
-              _animationController.forward();
-            },
-            onHover: (event) {
-              /// This prevents the image from jump instantly from
-              /// the offset given by the onEnter event to the offset
-              /// of the onHover event (kind of conflit)
-              if (_animation.status != AnimationStatus.forward) {
-                _offsetAnimationController.duration = Duration.zero;
-              }
+        _animationController.forward();
+      },
+      onHover: (event) {
+        /// This prevents the image from jump instantly from
+        /// the offset given by the onEnter event to the offset
+        /// of the onHover event (kind of conflit)
+        if (_animation.status != AnimationStatus.forward) {
+          _offsetAnimationController.duration = Duration.zero;
+        }
 
-              _offsetTween.begin = _offsetTween.end;
-              _offsetAnimationController.reset();
+        _offsetTween.begin = _offsetTween.end;
+        _offsetAnimationController.reset();
 
-              _offsetTween.end = getPerspectivePointer(event.position);
-              _offsetAnimationController.forward();
-            },
-            onExit: (event) {
-              _offsetAnimationController.duration = const Duration(milliseconds: 500);
+        _offsetTween.end = getPerspectivePointer(event.position);
+        _offsetAnimationController.forward();
+      },
+      onExit: (event) {
+        _offsetAnimationController.duration = const Duration(milliseconds: 500);
 
-              _offsetTween.begin = _offsetTween.end;
-              _offsetAnimationController.reset();
+        _offsetTween.begin = _offsetTween.end;
+        _offsetAnimationController.reset();
 
-              _offsetTween.end = Offset.zero;
-              _offsetAnimationController.forward();
+        _offsetTween.end = Offset.zero;
+        _offsetAnimationController.forward();
 
-              _animationController.reverse();
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(30),
-              child: AnimatedBuilder(
-                animation: _animation,
-                builder: (context, _) {
-                  return AnimatedBuilder(
-                    animation: _offsetAnimation,
-                    builder: (context, _) {
-                      final _animatedOffset = _offsetAnimation.value * _animation.value;
+        _animationController.reverse();
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(30),
+        child: AnimatedBuilder(
+          animation: _animation,
+          builder: (context, _) {
+            return AnimatedBuilder(
+              animation: _offsetAnimation,
+              builder: (context, _) {
+                final _animatedOffset = _offsetAnimation.value * _animation.value;
 
-                      return Transform(
-                        alignment: FractionalOffset.center,
-                        transform: Matrix4.identity()
-                          ..setEntry(3, 2, 0.002)
-                          ..rotateY(0.0003 * _animatedOffset.dx)
-                          ..rotateX(0.0003 * _animatedOffset.dy),
-                        child: Container(
-                          constraints: const BoxConstraints(
-                            maxWidth: 1024,
-                            maxHeight: 576,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(.3),
-                                spreadRadius: 5,
-                                blurRadius: 15,
-                              ),
-                            ],
-                          ),
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              PerspectiveLayer(
-                                imageSrc: widget.backgroundImageUrl,
-                                offset: Offset(
-                                  .03 * _animatedOffset.dx,
-                                  .03 * _animatedOffset.dy,
-                                ),
-                              ),
-                              // ...List.generate(
-                              //   4,
-                              //   (index) {
-                              //     index++;
-
-                              //     final _zoomScale = 0.2;
-
-                              //     return Transform.scale(
-                              //       scale: 1 + (_zoomScale * _animation.value),
-                              //       child: PerspectiveLayer(
-                              //         offset: Offset(
-                              //           (index * .03) * _animatedOffset.dx,
-                              //           (index * .03) * _animatedOffset.dy,
-                              //         ),
-                              //         imageSrc: 'assets/$index.png',
-                              //       ),
-                              //     );
-                              //   },
-                              // ),
-                              // for(String image in widget.layersImagesUrl)
-                              for (var i = 0; i < widget.layersImagesUrl.length; i++)
-                                Transform.scale(
-                                  scale: 1 + (.2 * _animation.value),
-                                  child: PerspectiveLayer(
-                                    offset: Offset(
-                                      (i * .03) * _animatedOffset.dx,
-                                      (i * .03) * _animatedOffset.dy,
-                                    ),
-                                    imageSrc: 'assets/$i.png',
-                                  ),
-                                )
-                            ],
+                return Transform(
+                  alignment: FractionalOffset.center,
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, 0.002)
+                    ..rotateY(0.0003 * _animatedOffset.dx)
+                    ..rotateX(0.0003 * _animatedOffset.dy),
+                  child: Container(
+                    constraints: const BoxConstraints(
+                      maxWidth: 1024,
+                      maxHeight: 576,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(.3),
+                          spreadRadius: 5,
+                          blurRadius: 15,
+                        ),
+                      ],
+                    ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        PerspectiveLayer(
+                          imageSrc: widget.backgroundImageUrl,
+                          offset: Offset(
+                            .03 * _animatedOffset.dx,
+                            .03 * _animatedOffset.dy,
                           ),
                         ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ),
+                        // ...List.generate(
+                        //   4,
+                        //   (index) {
+                        //     index++;
+
+                        //     final _zoomScale = 0.2;
+
+                        //     return Transform.scale(
+                        //       scale: 1 + (_zoomScale * _animation.value),
+                        //       child: PerspectiveLayer(
+                        //         offset: Offset(
+                        //           (index * .03) * _animatedOffset.dx,
+                        //           (index * .03) * _animatedOffset.dy,
+                        //         ),
+                        //         imageSrc: 'assets/$index.png',
+                        //       ),
+                        //     );
+                        //   },
+                        // ),
+                        // for(String image in widget.layersImagesUrl)
+                        for (var i = 0; i < widget.layersImagesUrl.length; i++)
+                          Transform.scale(
+                            scale: 1 + (.2 * _animation.value),
+                            child: PerspectiveLayer(
+                              offset: Offset(
+                                (i * .03) * _animatedOffset.dx,
+                                (i * .03) * _animatedOffset.dy,
+                              ),
+                              imageSrc: 'assets/$i.png',
+                            ),
+                          )
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
         ),
       ),
     );
